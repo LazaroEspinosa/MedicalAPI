@@ -25,5 +25,6 @@ public record DTOMedico(
 		@NotBlank(message="El numero de cedula es obligatorio")
 		String cedula,
 		
+		//Medicos generales
 		String especialidad) {
 }
