@@ -1,0 +1,1 @@
+ALTER TABLE appointments MODIFY COLUMN fechaDeConsulta VARCHAR(128) NOT NULL;
