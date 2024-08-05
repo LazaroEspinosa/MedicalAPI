@@ -97,6 +97,26 @@ import lombok.AllArgsConstructor;
  * private static final DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
  */
 
+/*
+ * Modificaciones significativas (1)
+ * 
+ * Para que el Metodo Get devuelva los appointments registrados, es necesario entender el error.
+ * Originalmente, el DTOAppointment tiene como parametros Strings y otros DTOs como DTOMedico y DTO Consultorio.
+ * El modelo Appointment toma los String y los asigna como sus atributos.
+ * Pero, para los parametros de tipo DTO, se crea una instancia de su modelo correspondiente y se llama a un metodo que devuelve un string.
+ * this.consultorio=new Consultorio(dtoAppointment.consultorio()).consultorioNumber();
+ * this.medico=new Medico(dtoAppointment.medico()).fullName();
+ * Obteniendo informacion especifica de los DTOs y almacenandolos en forma de String en el Appointment.
+ * Pero al querer convertir un Appointment a DTO no hay forma de rellenar la informacion que se omitio si no es con metodos de compensacion largos.
+ * Pero esto es un mal planteamiento del problema. Se planteo el mapeo de Consultorios y Medicos en DTO porque fue la primer entidad creada.
+ * En un planteamiento practico, no se necesita de todo eso para crear un appointment. Pero si se requiere tener un orden y control.
+ * Entonces hay que modificar el DTO para que sus parametros sean String (Ir a DTOAppointment para + Informacion)
+ * Aprovechamos para agregar un metodo que permita devolver a String la fecha que fue convertida a LocalDateTime:
+ * private static final DateTimeFormatter formatterDateToString = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"); para guardar el formato deseado.
+ * public String dateToString() {
+ * 		return fecha.format(formatterDateToString);
+ * }
+ */
 @Entity(name="Appointment")
 @Table(name="appointments")
 @Getter
@@ -115,15 +135,18 @@ public class Appointment {
 	//@Embedded	
 	String consultorio;
 	
-	private static final DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;	
+	private static final DateTimeFormatter formatterStringToDate = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+	private static final DateTimeFormatter formatterDateToString = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 	
-	public Appointment(DTOAppointment dtoAppointment) {
-		
-		LocalDateTime localdatetime=LocalDateTime.parse(dtoAppointment.fecha(), formatter);
-		
-		this.consultorio=new Consultorio(dtoAppointment.consultorio()).consultorioNumber();
-		this.medico=new Medico(dtoAppointment.medico()).fullName();
+	public Appointment(DTOAppointment dtoAppointment) {	
+		LocalDateTime localdatetime=LocalDateTime.parse(dtoAppointment.fecha(), formatterStringToDate);		
+		this.consultorio=dtoAppointment.consultorio();
+		this.medico=dtoAppointment.medico();
 		this.fecha=localdatetime;
 		this.paciente=dtoAppointment.paciente();
+	}
+	
+	public String dateToString() {
+		return fecha.format(formatterDateToString);
 	}
 }

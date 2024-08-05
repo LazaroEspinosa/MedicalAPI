@@ -52,9 +52,10 @@ public class MedicoService {
 	@Autowired
 	private MedicoRepository medicoRepository;
 	
-	public void registrarMedico(DTOMedico dtoMedico) {
+	public String addMedico(DTOMedico dtoMedico) {
 		Medico medico = new Medico(dtoMedico);
 		medicoRepository.save(medico);
+		return "Medico added";
 	}
 	
 	public Page<DTOMedicoListado> listaMedico(Pageable paginacion) {

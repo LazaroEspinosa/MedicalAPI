@@ -62,14 +62,15 @@ public class MedicoController {
 	@RequestMapping("/new")
 	public String newMedico(@RequestBody @Valid DTOMedico dtoMedico) {
 		//System.out.println(dtoMedico);
-		medicoService.registrarMedico(dtoMedico);
-		return "medico added";
+		medicoService.addMedico(dtoMedico);
+		return "newMedico completed";
 	}
 	
 
 	@GetMapping
 	@RequestMapping("/showAll")
 	public Page<DTOMedicoListado> showAllMedicos(Pageable paginacion) {
+		System.out.println("This is paginacion value"+paginacion);
 		return medicoService.listaMedico(paginacion);
 	}
 

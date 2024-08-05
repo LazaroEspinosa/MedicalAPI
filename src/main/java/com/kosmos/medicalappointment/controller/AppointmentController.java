@@ -1,6 +1,8 @@
 package com.kosmos.medicalappointment.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,12 +41,6 @@ import jakarta.validation.Valid;
  * Por arquitectura, lo que el controller recibira en esta ocasion sera un DTO tipo Class Record y sera necesario mapearla de forma adecuada.
  * Naturalmente, declaramos que el parametro es de tipo DTOAppointment y su nombre sera dtoAppointment. El IDE nos ayuda y sugiere crear el Record.
  * 
- * Cambio:
- * Se implementa la clase ApointmentService para separar las reglas de negocio de otras clases.
- * La primer optimizacion es transportar el proceso de convertir un DTO a un Model y de paso agregarlo en la DB en un solo metodo.
- * createAppointment() recibe el DTO y llama al metodo saveAppointment() de la clase AppointmentService usando una instancia previamente creada.
- * Usa el DTO y lo registra como entidad en la DB.
- * 
  * @Valid se agrega al @RequestBody para que la dependencia valide que los datos de ingresados por el usuario.
  * 1 Error solucionado: Consultar AppointmentService para mas detalles.
  * 
@@ -53,6 +49,16 @@ import jakarta.validation.Valid;
  * AGREGAR BindingResult
  */
 
+/*
+ * Modificaciones(2)
+ * 
+ * Se implementa la clase ApointmentService para separar las reglas de negocio de otras clases.
+ * La primer optimizacion es transportar el proceso de convertir un DTO a un Model y de paso agregarlo en la DB en un solo metodo.
+ * createAppointment() recibe el DTO y llama al metodo saveAppointment() de la clase AppointmentService usando una instancia previamente creada.
+ * Usa el DTO y lo registra como entidad en la DB.
+ * 
+ * Al usar Page y Pageable para listar los Appointments, Springboot exige un constructor (ir a DTOAppointment para + informacion)
+ */
 @RestController
 @RequestMapping("/appointment")
 public class AppointmentController {
@@ -62,10 +68,14 @@ public class AppointmentController {
 
 	@PostMapping
 	@RequestMapping("/new")
-	public String createAppointment(@Valid @RequestBody DTOAppointment dtoAppointment) {
+	public String newAppointment(@Valid @RequestBody DTOAppointment dtoAppointment) {
 		appointmentService.addAppointment(dtoAppointment);
 		 //System.out.println(dtoAppointment.medico());
 		
-		return "Appointment scheduled: "+dtoAppointment;
+		return "newAppointment completed";
+	}
+	
+	public Page<DTOAppointment> showAllAppointments(Pageable paginacion){
+		return appointmentService.showAllAppointments(paginacion);
 	}
 }
