@@ -3,6 +3,7 @@ package com.kosmos.medicalappointment.dto;
 import java.time.LocalDateTime;
 
 import com.kosmos.medicalappointment.model.Appointment;
+import com.kosmos.medicalappointment.model.Medico;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -28,13 +29,13 @@ import jakarta.validation.constraints.NotNull;
  * 
  * Modificaciones (3)
  * 
- *  Al usar Page y Pageable para listar los Appointments, Springboot exige un constructor (Usa el metodo this() para evitar un error de compilacion).
+ * 1. Al usar Page y Pageable para listar los Appointments, Springboot exige un constructor (Usa el metodo this() para evitar un error de compilacion).
  * 
- * Los formularios de la IGU mostrara una lista con los medicos, horarios y consultorios. Estos datos seran obtenidos desde la DB.
+ * 2. Los formularios de la IGU mostrara una lista con los medicos, horarios y consultorios. Estos datos seran obtenidos desde la DB.
  * Por lo tanto no es necesario que los parametros sean de clase DTO. Para obtener estas listas, se eujecutaran metodos GET.
  * Se cambia DTOMedico y DTOConsultorio por String.
  * 
- *Se debe modificar el constructor.
+ *3. Se debe modificar el constructor.
  *de
  *this(appointment.getMedico().fullname(),appointment.dateToString(),appointment.getPaciente(),appointment.getConsultorio().consultorioNumber());
  * a

@@ -24,8 +24,19 @@ import com.kosmos.medicalappointment.model.Appointment;
 import com.kosmos.medicalappointment.repository.AppointmentRepository;
 
 /*
- * Errores contados(2), Errores solucionados(2):
- * 1)Al agregar la clase AppointmentService y querer iniciar la aplicacion, surgio el siguiente error:
+ * Implementaciones:
+ * 
+ * showByMedico: 
+ * Establece que recibe como parametro un String con el nombre del medico y los requerimientos de paginacion.
+ * Devuelve una lista tipo Page con DTOs de Appointment.
+ * Para eso llama a appointmentRepository que como se establecio inicialmente, devolvera una Page de Appointments
+ * Usando findByMedico hacemos que Spring JPA nos ayude a encontrar los registros que coincidan con el nombre del medico que se compartio.
+ * Usando map(DTOAppointment::new) hacemos que cada modelo Appointment sea convertido a un nuevo DTO.
+ */
+
+/*
+ * Errores contados(3), Errores solucionados(3):
+ * 1. Al agregar la clase AppointmentService y querer iniciar la aplicacion, surgio el siguiente error:
  * 
  * Field appointmentService in com.kosmos.medicalappointment.controller.AppointmentController 
  * required a bean of type 'com.kosmos.medicalappointment.service.AppointmentService' that could not be found.
@@ -36,7 +47,7 @@ import com.kosmos.medicalappointment.repository.AppointmentRepository;
  * y que pertenece a la capa de servicio.
  * Esto permite que Spring escanee, detecte y registre esta clase como un bean en el contexto de la aplicación.
  * 
- * 2) Al implementar:
+ * 2. Al implementar:
  * public Page<DTOAppointment> showAllAppointments(Pageable paginacion) {
  * 		return appointmentRepository.findAll(paginacion).map(DTOAppointment::new);
  * }
@@ -45,7 +56,14 @@ import com.kosmos.medicalappointment.repository.AppointmentRepository;
  * 
  * El error fue extenso. Al iniciar el proyecto, se comenzo mapeando lo necesario para el appointment. De forma que en el DTO, sus parametros eran otros DTOs.
  * Las opciones eran crear un DTOAppointmentList como para los Medicos. Pero era un tanto redundante pues los datos de Post y Get si son los mismos.
- * Por lo tanto se soluciona modificando el DTO y la entidad (Model). Consultarlos para + info.
+ * Por lo tanto se soluciona modificando el DTO y la entidad (Model). Consultar Appointment para + info.
+ * 
+ * 3. Error similar al 2:The type DTOAppointment does not define DTOAppointment(DTOAppointment) that is applicable here
+ * Al querer implementar:
+ * public Page<DTOAppointment>showByMedico(String medico, Pageable paginacion) {
+ * 		return appointmentRepository.findByMedico(medico, paginacion).map(DTOAppointment::new);
+ * }
+ * Solucion en AppointmentRepository.
  */
 
 @Service
@@ -54,13 +72,19 @@ public class AppointmentService {
 	@Autowired
 	private AppointmentRepository appointmentRepository;
 	
+	private static final DateTimeFormatter formatterStringToDate = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+	
 	public String addAppointment(DTOAppointment dtoAppointment) {
 		Appointment appointment = new Appointment(dtoAppointment);
 		appointmentRepository.save(appointment);
 		return "Appointment added";
 	}
-
+	
 	public Page<DTOAppointment> showAllAppointments(Pageable paginacion) {
 		return appointmentRepository.findAll(paginacion).map(DTOAppointment::new);
+	}
+
+	public Page<DTOAppointment>showByMedico(String medico, Pageable paginacion) {
+		return appointmentRepository.findByMedico(medico, paginacion).map(DTOAppointment::new);
 	}
 }

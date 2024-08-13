@@ -1,7 +1,12 @@
 package com.kosmos.medicalappointment.repository;
 
+import java.time.LocalDateTime;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.kosmos.medicalappointment.dto.DTOAppointment;
 import com.kosmos.medicalappointment.model.Appointment;
 
 
@@ -41,7 +46,18 @@ import com.kosmos.medicalappointment.model.Appointment;
  * 
  * Que pasa si tengo un error? Lo mas rapido es abrir la base de datos y borrar el registro del intento fallido para modificar el archivo y reintentar.
  * Asi el versionado seguiria en orden.
+ * 
+ * Errores (1) Soluciones (1).
+ * El problema principal es que el repositorio está devolviendo un Page<DTOAppointment>,
+ * cuando debería devolver un Page<Appointment>,
+ * ya que DTOAppointment es el DTO y no la entidad que se almacena en la base de datos.
+ * Cambiar
+ * Page<DTOAppointment> findByMedico(String medico, Pageable paginacion);
+ * por
+ * Page<Appointment> findByMedico(String medico, Pageable paginacion);
  */
 public interface AppointmentRepository extends JpaRepository<Appointment, Long>{
+
+	Page<Appointment> findByMedico(String medico, Pageable paginacion);
 
 }
